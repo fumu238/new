@@ -15,11 +15,12 @@ Rails.application.routes.draw do
   post 'users/sign_up/complete' => 'users/registrations#complete'
   end
 
-   get "/orders" => "orders#index"
-   get "/orders/complete" => "orders#complete"
+  get "/orders/complete" => "orders#complete"
+  
   resources :users, only: [:index, :show, :edit] do
    resources :orders , only: [:new, :create, :update, :destroy, :show]
   end
+   get "/orders" => "orders#index"
   resources :carts, only: [:show]
 
 
@@ -30,9 +31,6 @@ Rails.application.routes.draw do
     resources :cart_items, only: [:create, :destroy, :update]
     resources :reviews, only: [:create, :destroy]
   end
-
-   get "/orders/complete" => "orders#complete"
-
 
   resources :discs, only: [:show, :edit, :update] do
   resources :tunes, only: [:new, :create, :destroy]

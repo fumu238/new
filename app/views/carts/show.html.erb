@@ -25,9 +25,7 @@
                 </div>
                 </div>
                 <div class="col-md-2 cart_item_2"><%= cart_item.product.product_price*cart_item.cart_quantity %> 円
-                  <%
-                   @total_price += cart_item.product.product_price*cart_item.cart_quantity
-                  %>
+                  <% @total_price += cart_item.product.product_price*cart_item.cart_quantity %>
                 </div>
                 <div class="col-md-1"><%= link_to '削除', product_cart_item_path(:product_id => cart_item.product.id, :id => cart_item.id), method: :delete, class: "btn btn-danger" %>
                 </div>
@@ -45,7 +43,7 @@
               <div class="col-md-9">
               </div>
                <div class="col-md-3">
-                <button class="btn btn-warning">支払い情報入力へ</button>
+                <button class="btn btn-warning"><%= link_to '注文画面へ',new_user_order_path(current_user)%></button>
               </div>
             </div>
           </div>

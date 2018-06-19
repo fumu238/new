@@ -4,42 +4,55 @@
       <div class="col-lg-3">
       </div>
        <div class="order col-lg-6">
-    <h3>注文内容の確認</h3>
-      
-  <div class="order-box">
+         <h3>注文内容の確認</h3>
 
-	  <div class="sendbox">
-	    <h4>登録住所</h4>
-	   <div class="address-form">
-	   </div>
-	   <h4>送付先住所</h4>
-	   <div class="address-form">
-	   	北海道札幌市南区4-5-6
-	  </div>
-	  </div>
+         <%= form_for([@user,@order]) do |f| %>
+          <div class="order-box">
 
-      <div class="delivery">
-      	<h4>配送方法の選択</h4>
-      	 <div class="btn-group">
-	      <button type="button" class="btn btn-default">
-		選択する
-		</button>
-		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-		<span class="caret"></span>
-		</button>
-		<ul class="dropdown-menu" role="menu">
-		<li role="presentation"><a role="menuitem" tabindex="-1" href="#">佐川急便</a></li>
-		<li role="presentation"><a role="menuitem" tabindex="-1" href="#">ヤマト</a></li>
-		<li role="presentation"><a role="menuitem" tabindex="-1" href="#">郵便</a></li>
-	    </ul>
-  		</div><br>
-        <h4>配送希望日時</h4>
-       <div class="delivery-box">6月30日、午前中希望</div>
-     </div>
+	       <div class="sendbox">
+	         <h4>請求先住所</h4>
+	   	
+	       <div class="address-form">
+	   	     <%= @user.address %>
+	       </div>
+	         <h4>送付先住所の入力</h4>
+	        <div class="address-form">
+
+	        	<%= fields_for(@sub_address) do |s| %>
+
+	        	<%= s.text_field :sub_address, :list =>"sub_address_list", :autocomplete => "off" %>
+	        	<datalist id="sub_address_list">
+					<% @sub_addresses.each do |sub_address| %>
+						<option value="<%= sub_address.sub_address %>"><%= sub_address.sub_address %></option>
+					<% end %>
+				</datalist>
+	        	<% end %>
+	        </div>
+	       </div>
+
+         <!--  <div class="delivery">
+      	  <h4>配送方法の選択</h4>
+      	   <div class="btn-group">
+	        <button type="button" class="btn btn-default">選択する
+		    </button>
+		    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+		    <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">佐川急便</a></li>
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">ヤマト</a></li>
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">郵便</a></li>
+		    </ul>
+  		  </div><br>
+          <h4>配送希望日時</h4>
+           <div class="delivery-box">6月30日、午前中希望</div>
+        </div> -->
      
-     <div class="pay">
-	      <h4>支払い方法の選択</h4>
-	      <div class="btn-group">
+         <div class="pay">
+	         <h4>支払い方法の選択</h4>
+
+	        	<%= f.collection_select(:payment_id, @payment, :id, :payment_method, prompt: "選択する") %>
+	      <!-- <div class="btn-group">
 		      <button type="button" class="btn btn-default">
 			選択する
 			</button>
@@ -47,44 +60,57 @@
 			<span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu" role="menu">
-			<li role="presentation"><a role="menuitem" tabindex="-1" href="#">銀行振込</a></li>
-			<li role="presentation"><a role="menuitem" tabindex="-1" href="#">商品代引き</a></li>
-			<li role="presentation"><a role="menuitem" tabindex="-1" href="#">クレジットカード</a></li>
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">銀行振込</a></li>
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">商品代引き</a></li>
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">クレジットカード</a></li>
 		    </ul>
-	  		</div>
-     </div>
+	  		</div> -->
+          </div>
 
-     <div class="preorder clearfix">
-     	<h4>商品の確認</h4>
-      
-      <div class="pre-product clearfix">
-      	<div class="product-image">NO IMAGE
-      	</div>
-      	<p class="order-text">【UNCHAIN】 10fold</p>
-      	<p class="preorder-price">小計 3,240円 </p>
-      </div>
-    
+         <div class="preorder clearfix">
+     	  <h4>商品の確認</h4>
+     	 
+     	  <% @cart.cart_items.each do |cart_item| %>
+     		
+           <div class="pre-product clearfix">
+      	    <div class="product-image"><%= attachment_image_tag cart_item.product, :image, :fill, 80, 80, format: 'jpeg' %>
+      	    </div>
+      	     <p class="order-text"><%= cart_item.product.product_name %></p>
+      	      注文数<%= cart_item.cart_quantity %>
+      	     <p class="preorder-price">
+      	     	小計<%= cart_item.product.product_price*cart_item.cart_quantity %> 円 </p>
+          </div>
+         <% @total_price += cart_item.product.product_price*cart_item.cart_quantity %>
+         <% @total_quantity += cart_item.cart_quantity %>
+
+         	<% end %>
       	<table class="price-table">
+      		
 		　<tr>
 		　　<td>商品合計数 </td>
-		　　<td>1</td>
+		　　<td><%= @total_quantity %></td>
 		　</tr>
 		　<tr>
 		　　<td>ご請求額 </td>
-		　　<td>3,240円</td>
+		　　<td> <%= @total_price %>円
+			
+			
+			<%= f.hidden_field :total_price, :value =>"#{@total_price}" %>
+			<%= f.hidden_field :status_id, :value =>1 %>
+
+		</td>
 		　</tr>
 		 <tr>
-		 <td colspan="2"><button class="btn btn-warning">注文の確定</button>
+		 <td colspan="2"><%= f.submit "注文" %>
 		 </td>
 		</tr>
 		</table>
-
-
+      </div>
      </div>
-
+     <% end %>
     </div>
+   <div class="col-lg-3">
+   </div>
   </div>
-  <div class="col-lg-3"></div>
  </div>
-</div>
 </div>
